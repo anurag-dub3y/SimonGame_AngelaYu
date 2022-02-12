@@ -1,0 +1,102 @@
+// alert("Hey! Welcome to the game");
+
+// Body
+$("body").css("background-color","#191970");
+$("body").css("color","white");
+
+
+// Head
+$("h1").css("text-align","center");
+$("h1").css("font-size","55px");
+$("h1").css("color","white");
+
+// Arrays
+var colors = ["red", "green", "blue", "yellow"];
+var gamepattern = [];
+var userclickedpattern = [];
+var mxscr=-1;
+
+
+// Variables
+var isgamerunning = false;
+var lvl=0;
+
+// Key has been pressed
+$(document).keypress(function(){
+    if(!isgamerunning){
+        $("body").css("background-color","#2a52be");
+        $("lvltit").text("Level "+lvl);
+        nextsequence();
+        isgamerunning=true;
+    }
+});
+
+// Function to generate random color and flash the button
+function nextsequence(){
+    lvl++;
+    $("h2").text("YOU ARE ON LEVEL "+lvl+"!");    
+    var x = Math.floor(Math.random()*3);
+    var randomchosencolor = colors[x];
+    gamepattern.push(randomchosencolor);
+    $("#" + randomchosencolor).fadeIn(100).fadeOut(100).fadeIn(100);
+    playsound(randomchosencolor);
+};
+
+// Button is being pressed (this is handler function)
+$(".btn").click(function(){
+    // alert("This is fine!");        
+    
+    // will be equal to the button that got clicked
+    var userchosencolor= $(this).attr("id");    
+    userclickedpattern.push(userchosencolor);
+    
+    
+    playsound(userchosencolor);         // Working fine
+    animatepress(userchosencolor);      // Working fine
+    checkans(userclickedpattern.length-1);
+});
+
+
+// Play the sounds whenever required
+function playsound(randomchosencolor){
+    var audio = new Audio(randomchosencolor + ".mp3");
+    audio.play();    
+};
+
+// Animatepress does stuff with the chose button
+function animatepress(currentcolor){
+    $("#" + currentcolor).addClass("pressed");
+    setTimeout(function(){
+        $("#"+currentcolor).removeClass("pressed");
+    },100);
+};
+
+// Checking if the current button was pressed
+function checkans(currentlvl){
+    if(gamepattern[currentlvl]===userclickedpattern[currentlvl]){
+        if(userclickedpattern.length===gamepattern.length){
+            setTimeout(function () {
+                nextsequence();
+            },1000);
+        }
+    }
+    
+    else{ 
+        alert("OOPS, WRONG ANS! REFRESH TO START AGAIN");       
+        $("h2").text("GAME OVER! REFRESH TO PLAY AGAIN");        
+        playsound(wrong);        
+        newgame();
+    }
+};
+
+// Start over function  
+function newgame(){
+    mxscr=Math.max(mxscr,lvl);
+    $("maxscore").text("High Score: " + mxscr);
+    lvl=0;
+    gamepattern=[];
+    isgamerunning=false;
+};
+
+$("footer").css("font-size","15px");
+
